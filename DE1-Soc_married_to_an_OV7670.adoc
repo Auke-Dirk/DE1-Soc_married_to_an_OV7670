@@ -1,6 +1,6 @@
 :toc:
 :toc-placement!:
 
-#include::00-introduction.adoc[]
+include::00-introduction.adoc[]
 
 toc::[]
