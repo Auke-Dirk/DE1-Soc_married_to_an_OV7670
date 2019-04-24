@@ -5,4 +5,4 @@ As you are probably aware, vga stands for video graphics array.
 If however you are not familiar with the term, then your first computer
 probably had an hdmi/vdi connector implying your are a young,
 healthy and vibrant person... don't like you and hope lots of 
-icon:bugs in your code! Just joking, spread the icon:heart
+icon:bugs show up in your code! Just joking, spread the icon:heart
