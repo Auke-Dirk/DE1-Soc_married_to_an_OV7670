@@ -1,6 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
+use ieee.Numeric_Std.all;
 
 ------------------------------------------------------------
 -- author Auke-Dirk Pietersma
@@ -30,34 +31,38 @@ port(
 );      
 end vga_vsequencer;
 
+-- 
 architecture archi of vga_vsequencer is  
 
 constant BP  : integer := 33;  
 constant ACT : integer := 480; 
 constant FP  : integer := 10; 
-constant RET : integer := 2; 
+constant RET : integer := 2;
+constant SD  : integer := BP + ACT + FP + RET; -- the Signal Duration
         
-signal cntr: std_logic_vector(9 downto 0);	-- we need to count up 525 2^10  
+-- we need to count up 525 2^10  
+signal cntr: std_logic_vector(9 downto 0) := std_logic_vector(to_unsigned(SD - 1,10));
 
 begin
 process (clk, reset) 
 begin   
   if (reset = '1') then   
-    cntr <= "0000000000";         
+    cntr <= std_logic_vector(to_unsigned(SD - 1,cntr'length));
   elsif (rising_edge(clk)) then
     
 	 cntr <= cntr + 1;  -- increment
 	 	 
-	 if (cntr = 800) then  -- cntr [0,799]
+	 if (cntr = SD) then  -- cntr [0,524]
 	   cntr <= "0000000000";
     end if;
 	
   end if;     
 end process; 
 
-bp_out  <= '1' when tmp < BP   else '0';
-act_out <= '1' when tmp >= BP and tmp < (BP + ACT) else '0';
-fp_out  <= '1' when tmp >= (BP + ACT) and tmp < (BP + ACT + FP) else '0';
-ret_out <= '1' when tmp >= (BP + ACT + FP) else '0';		  
+-- The (output) state signals
+bp_out  <= '1' when cntr < BP   else '0';
+act_out <= '1' when cntr >= BP and cntr < (BP + ACT) else '0';
+fp_out  <= '1' when cntr >= (BP + ACT) and cntr < (BP + ACT + FP) else '0';
+ret_out <= '1' when cntr >= (BP + ACT + FP) else '0';		  
 
 end archi;
