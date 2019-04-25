@@ -11,10 +11,10 @@ use ieee.std_logic_unsigned.all;
 -- states of a vga controller.
 -- The states in order, with their duration
 --
---	back porch   33
+--  back porch   33
 --  active       480
 --  front porch  10
---	retrace      2
+--  retrace      2
 --  -----------------
 --  total        525
 ------------------------------------------------------------
