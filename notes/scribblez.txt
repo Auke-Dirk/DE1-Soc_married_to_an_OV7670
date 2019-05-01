@@ -1,0 +1,130 @@
+Installing linux on de1 soc:
+https://www.terasic.com.tw/cgi-bin/page/archive.pl?Language=English&No=1081&PartNo=4
+Linux Console (Kernel 4.5)
+
+sudo dmsg
+
+[ 3976.449111] EXT4-fs (sdf2): mounting ext3 file system using the ext4 subsystem
+[ 3976.563415] EXT4-fs (sdf2): recovery complete
+[ 3976.574758] EXT4-fs (sdf2): mounted filesystem with ordered data mode. Opts: (null)
+[ 3976.746950] FAT-fs (sdf1)
+
+
+sudo dd bs=4M if=de10_standard_linux_console.img of=/dev/sdf conv=fsync
+
+
+sudo picocom -b 115200 /dev/ttyUSB1
+hold left ctrl a then q
+
+
+[ 3631.097227] usb 1-3: FTDI USB Serial Device converter now attached to ttyUSB1
+
+
+
+
+---O---.                                           
+|       |                  .-.           o o        
+|   |   |-----.-----.-----.| |   .----..-----.-----.
+|       |     | __  |  ---'| '--.|  .-'|     |     |
+|   |   |  |  |     |---  ||  --'|  |  |  '  | | | |
+'---'---'--'--'--.  |-----''----''--'  '-----'-'-'-'
+                -'  |
+                '---'
+
+The Angstrom Distribution socfpga ttyS0
+
+Angstrom v2014.12 - Kernel 
+
+socfpga login: root
+
+
+Installing Quartus: lite
+
+auke@debian:~/Downloads$ ls
+adressen_groningen.zip         deps                             ModelSimSetup-18.1.0.625-linux.run
+cgoban.jar                     gitkraken-amd64.deb              qt-unified-linux-x64-3.0.5-online.run
+cyclonev-18.1.0.625.qdz        image.jpeg                       QuartusLiteSetup-18.1.0.625-linux.run
+DE10-Standard_Linux_Console    images.jpeg
+DE10-Standard_User_manual.pdf  Loading Recording Webplayer.pdf
+auke@debian:~/Downloads$ 
+
+
+
+quartus: error while loading shared libraries: libpng12.so.0: cannot open shared object file: No such file or directory
+
+auke@debian:/etc/ld.so.conf.d$ sudo ldconfig
+auke@debian:/etc/ld.so.conf.d$ sudo ldconfig -p | grep libpng
+	libpng16.so.16 (libc6,x86-64) => /usr/lib/x86_64-linux-gnu/libpng16.so.16
+auke@debian:/etc/ld.so.conf.d$ sudo ldconfig -p | grep png
+	libpng16.so.16 (libc6,x86-64) => /usr/lib/x86_64-linux-gnu/libpng16.so.16
+auke@debian:/etc/ld.so.conf.d$ cat quartus.conf 
+/home/auke/dependencies/quartus/
+auke@debian:/etc/ld.so.conf.d$ ls /home/auke/dependencies/quartus/
+ls: cannot access '/home/auke/dependencies/quartus/': No such file or directory
+auke@debian:/etc/ld.so.conf.d$ cd
+auke@debian:~$ cd mv dependenies/ dependencies/
+bash: cd: too many arguments
+auke@debian:~$ mv dependenies/ dependencies/
+auke@debian:~$ sudo ldconfig 
+auke@debian:~$ sudo ldconfig -p | grep libpng
+	libpng16.so.16 (libc6,x86-64) => /usr/lib/x86_64-linux-gnu/libpng16.so.16
+auke@debian:~$ ls /home/auke/dependencies/quartus/
+auke@debian:~$ ls /home/auke/dependencies/
+quartus
+auke@debian:~$ cd dep
+bash: cd: dep: No such file or directory
+auke@debian:~$ ls
+build         Desktop    git             microsoft.gpg  Pictures    Templates
+dependencies  Documents  intelFPGA_lite  mousespeed     projection  Videos
+deps          Downloads  libraries       Music          Public      vpn
+auke@debian:~$ cd deps
+auke@debian:~/deps$ ls
+libpng12.so.0.50.0
+auke@debian:~/deps$ mv libpng12.so.0.50.0 ../dep
+dependencies/ deps/         
+auke@debian:~/deps$ mv libpng12.so.0.50.0 ../dependencies/quartus/
+auke@debian:~/deps$ ls
+auke@debian:~/deps$ sudo ldconfig -p | grep libpng
+	libpng16.so.16 (libc6,x86-64) => /usr/lib/x86_64-linux-gnu/libpng16.so.16
+auke@debian:~/deps$ sudo ldconfig 
+auke@debian:~/deps$ sudo ldconfig -p | grep libpng
+	libpng16.so.16 (libc6,x86-64) => /usr/lib/x86_64-linux-gnu/libpng16.so.16
+	libpng12.so.0 (libc6,x86-64) => /home/auke/dependencies/quartus/libpng12.so.0
+auke@debian:~/deps$ 
+
+
+Create a new udev rule:
+
+/etc/udev/rules.d/51-altera-usb-blaster.rules
+
+# USB-Blaster
+SUBSYSTEM=="usb", ATTR{idVendor}=="09fb", ATTR{idProduct}=="6001", MODE="0666"
+SUBSYSTEM=="usb", ATTR{idVendor}=="09fb", ATTR{idProduct}=="6002", MODE="0666"
+SUBSYSTEM=="usb", ATTR{idVendor}=="09fb", ATTR{idProduct}=="6003", MODE="0666"
+# USB-Blaster II
+SUBSYSTEM=="usb", ATTR{idVendor}=="09fb", ATTR{idProduct}=="6010", MODE="0666"
+SUBSYSTEM=="usb", ATTR{idVendor}=="09fb", ATTR{idProduct}=="6810", MODE="0666"
+
+Then, reload that file using udevadm:
+
+# udevadm control --reload
+
+
+
+https://askubuntu.com/questions/602725/trouble-running-modelsim-on-ubuntu
+
+Using: /home/auke/intelFPGA_lite/18.1/modelsim_ase/linuxaloem/
+auke@debian:~/intelFPGA_lite/18.1/modelsim_ase/linuxaloem$ sudo ldconfig 
+ldconfig: /home/auke/dependencies/quartus/libfreetype.so.6 is not a symbolic link
+
+
+libfreetype.a  libfreetype.la  libfreetype.lai  libfreetype.so  libfreetype.so.6  libfreetype.so.6.10.1  libpng12.so.0  libpng12.so.0.50.0
+auke@debian:~/dependencies/quartus$ rm libfreetype.so.6
+auke@debian:~/dependencies/quartus$ ln -s libfreetype.so.6.10.1 libfreetype.so.6
+auke@debian:~/dependencies/quartus$ 
+
+https://gist.github.com/PrieureDeSion/e2c0945cc78006b00d4206846bdb7657
+
+
+
+
