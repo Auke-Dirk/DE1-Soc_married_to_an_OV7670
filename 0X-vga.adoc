@@ -6,9 +6,22 @@ probably had an hdmi/vdi connector implying your are a young,
 healthy and vibrant person... don't like you and hope lots of
 icon:bugs show up in your code! Just joking, spread the icon:heart
 
-== CRT
+=== CRT
 What i recall from the inner workings of an old CRT monitor is not that
 much, probably learned it sometime ago (15 years), it just did not stick.
-In my imagination there is this photon beam, moving from left to right
-and just like the carriage return and line feed, needs to to move back
-to the beginning and go to the next line.
+In my imagination, which can be far from the truth, there is this photon
+beam moving from left to right and just like the carriage return and
+line feed, needs to to move back to the beginning and go to the next
+line. Repeating this process until it has reached the last line of the
+screen on which it moves the beam back to its initial state.
+
+=== VHDL Design
+[source]
+....
+        +------+
+        |   S  +--> BP
+CLK --->+   E  +--> ACT
+        |   Q  +--> FP
+        |      +--> RET
+        +------+
+....
