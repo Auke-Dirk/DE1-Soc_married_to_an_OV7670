@@ -2,18 +2,39 @@
 
 As you are probably aware, vga stands for video graphics array.
 If however you are not familiar with the term, then your first computer
-probably had an hdmi/vdi connector implying your are a young,
+probably had an hdmi/dvi connector implying your are a young,
 healthy and vibrant person... don't like you and hope lots of
 icon:bugs show up in your code! Just joking, spread the icon:heart
 
-=== CRT
+=== CRT Monitor
 What i recall from the inner workings of an old CRT monitor is not that
-much, probably learned it sometime ago (15 years), it just did not stick.
+much, probably learned it sometime (15 years) ago, it just did not stick.
 In my imagination, which can be far from the truth, there is this photon
 beam moving from left to right and just like the carriage return and
 line feed, needs to to move back to the beginning and go to the next
 line. Repeating this process until it has reached the last line of the
 screen on which it moves the beam back to its initial state.
+During the drawing state we can influence the amount of photons that
+are emitted per channel per pixel (x,y,r,g,b).
+
+=== VGA Protocol
+The vga protocol is not one of the most complicated protocols one
+can imagine. The industry standard for vga is a viewing area of 640x480
+at 60hz with a 25.175 MHz pixel clock.
+
+This gives us  60 x 640 x 480 = 18.432.000 amount of pixels to draw
+per second. Having a clock at 25.175 MHz, we theoretically could
+draw 25.175.000 pixels per second. However, since the beam spends time to
+reposition itself for the next line this would not be possible.
+
+The common view is that there are 800 pixel horizontally and 525 pixels
+vertically. Now we have a total of 800 x 525 x 60 = 25.200.000
+pixels per second. __Why not use 25.2 MHz clock?__ .. .. I'm clueless
+to that, and will not even try to throw in a wild guess. I does remind me
+of some of the study material back at university where the author would
+say: __I leave this as an exercise for the reader!__ Firmly believing
+the author had no clue him self, which of course he... really didn't :-) .
+
 
 === VHDL Design
 [source]
@@ -21,7 +42,7 @@ screen on which it moves the beam back to its initial state.
         +------+
         |   S  +--> BP
 CLK --->+   E  +--> ACT
-        |   Q  +--> FP
+RST --->+   Q  +--> FP
         |      +--> RET
         +------+
 ....
