@@ -14,8 +14,8 @@ beam moving from left to right and just like the carriage return and
 line feed, needs to to move back to the beginning and go to the next
 line. Repeating this process until it has reached the last line of the
 screen on which it moves the beam back to its initial state.
-During the drawing state we can influence the amount of photons that
-are emitted per channel per pixel (x,y,r,g,b).
+During the drawing state, which will be addressed later, we can influence
+the amount of photons that are emitted per channel per pixel (x,y,r,g,b).
 
 === VGA Protocol
 The vga protocol is not one of the most complicated protocols one
@@ -24,17 +24,62 @@ at 60hz with a 25.175 MHz pixel clock.
 
 This gives us  60 x 640 x 480 = 18.432.000 amount of pixels to draw
 per second. Having a clock at 25.175 MHz, we theoretically could
-draw 25.175.000 pixels per second. However, since the beam spends time to
-reposition itself for the next line this would not be possible.
+draw 25.175.000 pixels per second. However, since the beam spends time on
+other things then drawing, like reposition itself for the next line,
+this would impossible.
 
 The common view is that there are 800 pixel horizontally and 525 pixels
 vertically. Now we have a total of 800 x 525 x 60 = 25.200.000
 pixels per second. __Why not use 25.2 MHz clock?__ .. .. I'm clueless
-to that, and will not even try to throw in a wild guess. I does remind me
-of some of the study material back at university where the author would
-say: __I leave this as an exercise for the reader!__ Firmly believing
-the author had no clue him self, which of course he... really didn't :-) .
+to that, and will not even try to throw in a wild guess. Being clueless
+reminds me of some of the study material back at university where the author
+would say: __I leave this as an exercise for the reader!__ Firmly believing
+the author had no clue him self, which of course he... really didn't
+:-) .
 
+So in short, displaying *640x480@60hz* gives a theoretical screen of
+*800x525* and practical screen of *640x480*. There are also different
+resolutions and frequencies available each having a different theoretical
+width and height.
+
+Different stages
+^^^^^^^^^^^^^^^^
+
+Whenever the beam is not actively being used for drawing, what is it doing,
+and how are these stages described?
+
+In exactly one full line processing the vertical vga-component goes
+through four stages, called: _back porch_, _active_, _front porch_ and
+_retrace_. If you are interested in what physically happens during these
+stages then probably Wikipedia is your friend and not me. I'm thinking
+along the lines of speeding up and down the beam, charging capacitors etc,
+then again it might be the little mouse inside the CRT that requires
+some R & R. The vertical vga-component goes through the exact same stages
+but obviously with different lengths per stage.
+
+This following table sums up the stages and their corresponding lengths
+measured in pixels.
+[options="header"]
+|==================================
+|       |  BP| ACT|  FP| RET|
+|HOR    |    |    |    |    | 800
+|VER    |  33| 480|  10|   2| 525
+|==================================
+
+Which can visualy be thought of as:
+[source]
+....
+|XXXXXXXXXXXXXXXXXXXXXX@|
+|XXXXXXXXXXXXXXXXXXXXXX@|
+|X                    X@|
+|X                    X@|
+|X                    X@|
+|XXXXXXXXXXXXXXXXXXXXXX@|
+|@@@@@@@@@@@@@@@@@@@@@@@|
+....
+
+Where X denotes either back or front porch, and @ the retrace. This leaves
+the empty are as the active stage on which we draw our image.  
 
 === VHDL Design
 [source]
