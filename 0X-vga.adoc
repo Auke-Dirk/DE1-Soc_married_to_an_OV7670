@@ -25,17 +25,23 @@ at 60hz with a 25.175 MHz pixel clock.
 This gives us  60 x 640 x 480 = 18.432.000 amount of pixels to draw
 per second. Having a clock at 25.175 MHz, we theoretically could
 draw 25.175.000 pixels per second. However, since the beam spends time on
-other things then drawing, like reposition itself for the next line,
+other things then drawing, like repositioning itself for the next line,
 this would impossible.
 
-The common view is that there are 800 pixel horizontally and 525 pixels
-vertically. Now we have a total of 800 x 525 x 60 = 25.200.000
-pixels per second. __Why not use 25.2 MHz clock?__ .. .. I'm clueless
-to that, and will not even try to throw in a wild guess. Being clueless
-reminds me of some of the study material back at university where the author
-would say: __I leave this as an exercise for the reader!__ Firmly believing
-the author had no clue him self, which of course he... really didn't
-:-) .
+Since this is system isn't as magical as quantum mechanics, we do need to
+describe what's going on regarding the full 25.175.000 pixels. The common view
+is that there are 800 pixel horizontally and 525 pixels vertically. Now we
+have a total of 800 x 525 x 60 = 25.200.000 pixels per second.
+__Why not use 25.2 MHz clock?__ Or something that is at least dividable by 60?
+.. .. I'm clueless to that, and will not even try to throw in a wild guess.
+Being clueless reminds me of some of the study material back at university where
+the author would say: +
+           __I leave this as an exercise for the reader!__ +
+Firmly believing the author had no clue him self, which of course he...
+really didn't  :-) .
+
+__Psssssst__...  just google 25175000 and you will find advertisement regarding
+*Quartz* watches... just saying!
 
 So in short, displaying *640x480@60hz* gives a theoretical screen of
 *800x525* and practical screen of *640x480*. There are also different
@@ -48,7 +54,7 @@ Different stages
 Whenever the beam is not actively being used for drawing, what is it doing,
 and how are these stages described?
 
-In exactly one full line processing the vertical vga-component goes
+In processing one full line the vertical vga-component goes
 through four stages, called: _back porch_, _active_, _front porch_ and
 _retrace_. If you are interested in what physically happens during these
 stages then probably Wikipedia is your friend and not me. I'm thinking
@@ -78,16 +84,39 @@ Which can visualy be thought of as:
 |@@@@@@@@@@@@@@@@@@@@@@@|
 ....
 
-Where X denotes either back or front porch, and @ the retrace. This leaves
-the empty are as the active stage on which we draw our image.  
+Where X denotes either back or front porch, and @ the retrace.
+This leaves
+the empty area as the active stage on which we draw our image.
 
-=== VHDL Design
+=== Hardware Design
+Since both the horizontal and vertical stages are the same it made
+sense to me to describe them as two identical and very simple blocks.
+
 [source]
 ....
+                                       +-----+
+        +-----+                        |  V  +--> BP
+        |  H  +--> BP --------> CLK -->+  S  +--> ACT
+ CLK -->+  S  +--> ACT          RST -->+  E  +--> FP
+ RST -->+  E  +--> FP                  |  Q  +--> RET
+        |  Q  +--> RET                 +-----+
         +------+
-        |   S  +--> BP
-CLK --->+   E  +--> ACT
-RST --->+   Q  +--> FP
-        |      +--> RET
-        +------+
+....
+
+Connecting the *HSEQ:CLK* to the ~25Mhz system clock and the *VSEQ:CLK* to the
+*HSEQ:BP* pin we are more or less done already.
+
+Combined states:
+^^^^^^^^^^^^^^^^
+Since we are not allowed to draw on the screen whenever either of the two
+blocks is in *RETRACE*, by just adding an _or_ gate on the *SEQ:RET* pins
+provides us that functionality.
+
+Similarly adding an _and_ gate on *SEQ:ACT* gives us the information wheter or
+not we are in the active/drawing area.
+[source]
+....
+  HSEQ:RET--|OR                    HSEQ:ACT--|&&
+            |OR----|o>--ALLOWED              |&&----ACT AREA
+  VSEQ:RET--|OR                    VSEQ:ACT--|&&
 ....
