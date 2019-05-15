@@ -1,6 +1,10 @@
 :toc:
 :toc-placement!:
 
+toc::[]
+
 include::00-introduction.adoc[]
+
+include::0X-vga.adoc[]
 
 toc::[]
