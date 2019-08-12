@@ -68,7 +68,7 @@ measured in pixels.
 [options="header"]
 |==================================
 |       |  BP| ACT|  FP| RET|
-|HOR    |    |    |    |    | 800
+|HOR    |  48| 640|  16|  96| 800
 |VER    |  33| 480|  10|   2| 525
 |==================================
 
@@ -120,3 +120,11 @@ not we are in the active/drawing area.
             |OR----|o>--ALLOWED              |&&----ACT AREA
   VSEQ:RET--|OR                    VSEQ:ACT--|&&
 ....
+
+=== Getting the f$%^&* thing to work
+
+As a first test i decided on using three switches on the DE1 as active color
+channels (R,G,B), allowing me to test timing and color input
+(disregarding pixels).
+
+Let's start of with showing the final solution for a working

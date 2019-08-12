@@ -8,7 +8,7 @@ use ieee.Numeric_Std.all;
 --
 -- VGA Vertical Sequencer
 --
--- vga_vsequencer is a simple sequencer for the horizontal
+-- vga_vsequencer is a simple sequencer for the vertical
 -- states of a vga controller.
 -- The states in order, with their duration
 --
@@ -37,7 +37,7 @@ architecture archi of vga_vsequencer is
 constant BP  : integer := 33;  
 constant ACT : integer := 480; 
 constant FP  : integer := 10; 
-constant RET : integer := 2;
+constant RET : integer :=  2;
 constant SD  : integer := BP + ACT + FP + RET; -- the Signal Duration
         
 -- we need to count up 525 2^10  
@@ -46,15 +46,15 @@ signal cntr: std_logic_vector(9 downto 0) := std_logic_vector(to_unsigned(SD - 1
 begin
 process (clk, reset) 
 begin   
-  if (reset = '1') then   
-    cntr <= std_logic_vector(to_unsigned(SD - 1,cntr'length));
-  elsif (rising_edge(clk)) then
-    
-	 cntr <= cntr + 1;  -- increment
-	 	 
-	 if (cntr = SD) then  -- cntr [0,524]
-	   cntr <= "0000000000";
-    end if;
+  -- if (reset = '1') then   
+  --  cntr <= std_logic_vector(to_unsigned(SD - 1,cntr'length));
+  if (rising_edge(clk)) then
+     	 
+  if (cntr = SD -1) then  -- cntr [0,524]
+    cntr <= "0000000000";
+  else
+    cntr <= cntr + 1;  -- increment
+  end if;
 	
   end if;     
 end process; 
